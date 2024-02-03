@@ -13,8 +13,12 @@ async function cd(currentPath, pathToDirectory) {
     } else {
       resultPath = path.resolve(currentPath, pathToDirectory);
     }
+    const fileStats = await fsPromises.stat(resultPath);
     await fsPromises.access(resultPath);
-    return resultPath;
+    if (fileStats.isDirectory()) {
+      return await fsPromises.realpath(resultPath);
+    }
+    throw new Error('The path is invalid');
   } catch {
     console.error('Invalid input');
   }
@@ -22,14 +26,20 @@ async function cd(currentPath, pathToDirectory) {
 
 async function ls(currentPath) {
   try {
-    console.log(currentPath);
     const dirContent = await fsPromises.readdir(currentPath, 
       {"withFileTypes": true});
-      console.log("after");
     const printInfo = []
     for (const content of dirContent) {
+      let contentType = 'undefined';
+      if (content.isDirectory()) {
+        contentType = 'directory';
+      } else if (content.isFile()) {
+        contentType = 'file';
+      } else if (content.isSymbolicLink()) {
+        contentType = 'symbolic link';
+      }
       const newContent = { name: content.name,
-        type: content.isDirectory() ? 'directory' : 'file' };
+        type: contentType };
       printInfo.push(newContent);
     }
     printInfo.sort((a, b) => a.type.localeCompare(b.type) || a.name - b.name);
