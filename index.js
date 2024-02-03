@@ -1,11 +1,10 @@
 import os from 'os';
 import { Transform, pipeline } from 'stream';
-
+import {up, cd, ls} from './custom_modules/nwd/nwd.js'
 
 let USERNAME = '';
-let CURRENT_DIR = {
-  dirPath: os.homedir(),
-};
+let CURRENT_DIR = os.homedir();
+
 
 async function checkInitialParameters() {
   const argv = process.argv.at(-1);
@@ -25,21 +24,44 @@ async function printWelcomeMessage() {
 
 const transformInput = new Transform({
   transform(chunk, enc, cb) {
-    const inputData = chunk.toString().trim();
-    if (inputData.includes('.exit')) {
-      console.log(`Thank you for using File Manager, ${USERNAME}, goodbye!`);
-      process.exit();
+    try {
+      const inputData = chunk.toString().trim();
+      if (inputData.includes('.exit')) {
+        console.log(`Thank you for using File Manager, ${USERNAME}, goodbye!`);
+        process.exit();
+      }
+      const [command, arg1, arg2, ...otherArgs] =
+        inputData
+          .split(" ")
+          .map((value) => value.trim());
+      // console.log(inputData);
+      switch (command) {
+        case 'up':
+          CURRENT_DIR = up(CURRENT_DIR);
+          break;
+        case 'cd':
+          cd();
+          break;
+        case 'ls':
+          ls();
+          break;
+        default:
+          console.error('Operation failed');
+      }
+      
+      this.push(os.EOL + os.EOL);
+      this.push(`You are currently in ${CURRENT_DIR}`);
+      this.push(os.EOL);
+    } catch(err) {
+      console.log(err);
+      console.error('The File Management system failed');
     }
-    this.push(os.EOL);
-    this.push(os.EOL);
-    this.push(`You are currently in ${CURRENT_DIR.dirPath}`);
-    this.push(os.EOL);
     cb();
   }
 })
 
 async function startConsoleInput() {
-  process.stdout.write(`You are currently in ${CURRENT_DIR.dirPath}`);
+  process.stdout.write(`You are currently in ${CURRENT_DIR}`);
   process.stdout.write(os.EOL);
   
   pipeline(
@@ -47,7 +69,7 @@ async function startConsoleInput() {
     transformInput,
     process.stdout,
     (err) => {
-      console.error(`Operation failed`)
+      console.error(`The programme failed.`)
     }
   )
 
