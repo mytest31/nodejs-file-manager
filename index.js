@@ -23,7 +23,7 @@ async function printWelcomeMessage() {
 }
 
 const transformInput = new Transform({
-  transform(chunk, enc, cb) {
+  async transform(chunk, enc, cb) {
     try {
       const inputData = chunk.toString().trim();
       if (inputData.includes('.exit')) {
@@ -40,15 +40,15 @@ const transformInput = new Transform({
           CURRENT_DIR = up(CURRENT_DIR);
           break;
         case 'cd':
-          cd();
+          CURRENT_DIR = await cd(CURRENT_DIR, arg1) ?? CURRENT_DIR;
           break;
         case 'ls':
           ls();
           break;
         default:
-          console.error('Operation failed');
+          console.error('Invalid input');
       }
-      
+
       this.push(os.EOL + os.EOL);
       this.push(`You are currently in ${CURRENT_DIR}`);
       this.push(os.EOL);
