@@ -32,7 +32,7 @@ const transformInput = new Transform({
       }
       const [command, ...args] =
         inputData
-          .split(" ", 2)
+          .split(" ")
           .map((value, idx) => idx === 0 ? value.trim() : value);
 
       switch (command) {
@@ -43,7 +43,6 @@ const transformInput = new Transform({
           CURRENT_DIR = await cd(CURRENT_DIR, args.join(' ')) ?? CURRENT_DIR;
           break;
         case 'ls':
-          console.log(`input ls ${CURRENT_DIR}`);
           await ls(CURRENT_DIR);
           break;
         default:

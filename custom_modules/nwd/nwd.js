@@ -1,5 +1,6 @@
 import fsPromises from 'fs/promises';
 import path from 'path';
+import os from 'os';
 
 function up(currentPath) {
   return path.dirname(currentPath);
@@ -8,7 +9,9 @@ function up(currentPath) {
 async function cd(currentPath, pathToDirectory) {
   try {
     let resultPath = '';
-    if (path.isAbsolute(pathToDirectory)) {
+    if (pathToDirectory.startsWith('~')) {
+      resultPath = path.resolve(os.homedir(), pathToDirectory.slice(1));
+    } else if (path.isAbsolute(pathToDirectory)) {
       resultPath = path.format(path.parse(pathToDirectory));
     } else {
       resultPath = path.resolve(currentPath, pathToDirectory);
@@ -45,7 +48,7 @@ async function ls(currentPath) {
     printInfo.sort((a, b) => a.type.localeCompare(b.type) || a.name - b.name);
     console.table(printInfo);
   } catch {
-    console.error('Invalid input 3');
+    console.error('Invalid input');
   }
 }
 
