@@ -20,8 +20,23 @@ async function cd(currentPath, pathToDirectory) {
   }
 }
 
-function ls() {
-
+async function ls(currentPath) {
+  try {
+    console.log(currentPath);
+    const dirContent = await fsPromises.readdir(currentPath, 
+      {"withFileTypes": true});
+      console.log("after");
+    const printInfo = []
+    for (const content of dirContent) {
+      const newContent = { name: content.name,
+        type: content.isDirectory() ? 'directory' : 'file' };
+      printInfo.push(newContent);
+    }
+    printInfo.sort((a, b) => a.type.localeCompare(b.type) || a.name - b.name);
+    console.table(printInfo);
+  } catch {
+    console.error('Invalid input 3');
+  }
 }
 
 export { up, cd, ls };

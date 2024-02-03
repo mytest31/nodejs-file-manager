@@ -43,7 +43,8 @@ const transformInput = new Transform({
           CURRENT_DIR = await cd(CURRENT_DIR, arg1) ?? CURRENT_DIR;
           break;
         case 'ls':
-          ls();
+          console.log(`input ls ${CURRENT_DIR}`);
+          await ls(CURRENT_DIR);
           break;
         default:
           console.error('Invalid input');
