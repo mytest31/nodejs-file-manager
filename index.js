@@ -1,6 +1,8 @@
 import os from 'os';
 import { Transform, pipeline } from 'stream';
 
+
+let USERNAME = '';
 let CURRENT_DIR = {
   dirPath: os.homedir(),
 };
@@ -16,15 +18,18 @@ async function checkInitialParameters() {
 }
 
 async function printWelcomeMessage() {
-  const currentUserName = process.argv.at(-1).split('=')[1].trim();
-  process.stdout.write(`Welcome to the File Manager, ${currentUserName}!`);
-  process.stdout.write(os.EOL);
-  process.stdout.write(os.EOL);
+  USERNAME = process.argv.at(-1).split('=')[1].trim();
+  process.stdout.write(`Welcome to the File Manager, ${USERNAME}!`);
+  process.stdout.write(os.EOL + os.EOL);
 }
 
 const transformInput = new Transform({
   transform(chunk, enc, cb) {
     const inputData = chunk.toString().trim();
+    if (inputData.includes('.exit')) {
+      console.log(`Thank you for using File Manager, ${USERNAME}, goodbye!`);
+      process.exit();
+    }
     this.push(os.EOL);
     this.push(os.EOL);
     this.push(`You are currently in ${CURRENT_DIR.dirPath}`);
@@ -44,7 +49,12 @@ async function startConsoleInput() {
     (err) => {
       console.error(`Operation failed`)
     }
-  )  
+  )
+
+  process.on("SIGINT", (code) => {
+    console.log(`Thank you for using File Manager, ${USERNAME}, goodbye!`);
+    process.exit();
+  })
 }
 
 async function startApp() {
