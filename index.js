@@ -30,17 +30,17 @@ const transformInput = new Transform({
         console.log(`Thank you for using File Manager, ${USERNAME}, goodbye!`);
         process.exit();
       }
-      const [command, arg1, arg2, ...otherArgs] =
+      const [command, ...args] =
         inputData
           .split(" ")
-          .map((value) => value.trim());
-      // console.log(inputData);
+          .map((value, idx) => idx === 0 ? value.trim() : value);
+
       switch (command) {
         case 'up':
           CURRENT_DIR = up(CURRENT_DIR);
           break;
         case 'cd':
-          CURRENT_DIR = await cd(CURRENT_DIR, arg1) ?? CURRENT_DIR;
+          CURRENT_DIR = await cd(CURRENT_DIR, args.join(' ')) ?? CURRENT_DIR;
           break;
         case 'ls':
           console.log(`input ls ${CURRENT_DIR}`);
