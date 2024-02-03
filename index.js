@@ -32,7 +32,7 @@ const transformInput = new Transform({
       }
       const [command, ...args] =
         inputData
-          .split(" ")
+          .split(" ", 2)
           .map((value, idx) => idx === 0 ? value.trim() : value);
 
       switch (command) {
