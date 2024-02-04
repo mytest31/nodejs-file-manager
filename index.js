@@ -73,13 +73,14 @@ const transformInput = new Transform({
           await cp(this, CURRENT_DIR, args);
           break;
         case 'mv':
-          await mv(CURRENT_DIR, args);
+          await mv(this, CURRENT_DIR, args);
           break;
         case 'rm':
           await rm(CURRENT_DIR, args.join(' '));
+          printIntroductionPrompt(this, CURRENT_DIR);
           break;
         default:
-          console.error('Invalid input');
+          console.error('Invalid input main');
           printIntroductionPrompt(this, CURRENT_DIR);
       }
     } catch {

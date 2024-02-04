@@ -86,21 +86,28 @@ async function cp(thisObj, currentDir, args) {
     })
 
     input.on('error', () => {
-      console.error('Invalid input');  
+      console.error('Invalid input cp 1');  
       input.emit('end');
     })
   
   } catch {
-    console.error('Invalid input');
+    console.error('Invalid input cp 2');
   }
 }
 
-async function mv() {
-  //
+async function mv(thisObj, currentDir, args) {
+  await cp(thisObj, currentDir, args);
+  await rm(currentDir, args[0]);
 }
 
-async function rm() {
-  //
+async function rm(currentDir, filePath) {
+  try {
+    const absoluteFilePath = await getPathToFile(currentDir, filePath);
+    console.log(absoluteFilePath);
+    await fsPromises.rm(absoluteFilePath);
+  } catch {
+    console.error('Invalid input delete');
+  }
 }
 
 
