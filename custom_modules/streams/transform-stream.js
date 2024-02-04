@@ -6,6 +6,9 @@ import { getHash } from '../hash/hash.js';
 import { compress, decompress } from '../zip/zip.js';
 import { cat, add, rn, cp, mv, rm }
   from '../basic-fs/basic-fx.js';
+import { getArguments } from '../arg-process/arg-process.js';
+import { USERNAME } from '../../index.js';
+
 
 let CURRENT_DIR = os.homedir();
 
@@ -13,10 +16,6 @@ function printIntroductionPrompt(thisObj, currentDir) {
   thisObj.push(os.EOL + os.EOL);
   thisObj.push(`You are currently in ${currentDir}`);
   thisObj.push(os.EOL);
-}
-
-function getArguments(args) {
-  return args;
 }
 
 const transformInput = new Transform({
@@ -28,6 +27,7 @@ const transformInput = new Transform({
         process.exit();
       }
       const [command, ...args] = inputData.split(" ");
+      const processedArgs = getArguments(args);
 
       switch (command) {
         case 'up':
@@ -35,7 +35,7 @@ const transformInput = new Transform({
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'cd':
-          CURRENT_DIR = await cd(CURRENT_DIR, args.join(' ')) ?? CURRENT_DIR;
+          CURRENT_DIR = await cd(CURRENT_DIR, processedArgs) ?? CURRENT_DIR;
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'ls':
@@ -43,38 +43,38 @@ const transformInput = new Transform({
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'cat':
-          cat(this, CURRENT_DIR, args.join(' '));
+          cat(this, CURRENT_DIR, processedArgs);
           break;
         case 'add':
-          await add(CURRENT_DIR, args.join(' '));
+          await add(CURRENT_DIR, processedArgs);
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'rn':
-          await rn(CURRENT_DIR, getArguments(args));
+          await rn(CURRENT_DIR, processedArgs);
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'cp':
-          await cp(this, CURRENT_DIR, args);
+          await cp(this, CURRENT_DIR, processedArgs);
           break;
         case 'mv':
-          await mv(this, CURRENT_DIR, args);
+          await mv(this, CURRENT_DIR, processedArgs);
           break;
         case 'rm':
-          await rm(CURRENT_DIR, args.join(' '));
+          await rm(CURRENT_DIR, processedArgs);
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'os':
-          await getOSInfo(this, args);
+          await getOSInfo(this, processedArgs);
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'hash':
-          await getHash(this, CURRENT_DIR, args.join(' '));
+          await getHash(this, CURRENT_DIR, processedArgs);
           break;
         case 'compress':
-          await compress(this, CURRENT_DIR, args);
+          await compress(this, CURRENT_DIR, processedArgs);
           break;
         case 'decompress':
-          await decompress(this, CURRENT_DIR, args);
+          await decompress(this, CURRENT_DIR, processedArgs);
           break;
         default:
           console.error('Invalid input');
@@ -82,6 +82,7 @@ const transformInput = new Transform({
       }
     } catch {
       console.error('Invalid input');
+      printIntroductionPrompt(this, CURRENT_DIR);
     }
     cb();
   }

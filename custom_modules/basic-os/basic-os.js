@@ -25,8 +25,12 @@ async function getArchitecture(thisObj) {
 }
 
 async function getOSInfo(thisObj, args) {
+  if (args.length !== 1 || args[0].trim() === "") {
+    throw new Error("Wrong number of arguments");
+  }
+  
   try {
-    let osArg = args.join("").trim();
+    let osArg = args[0];
     switch (osArg)  {
       case '--EOL':
         getEOL(thisObj);
@@ -47,7 +51,7 @@ async function getOSInfo(thisObj, args) {
         console.error('Invalid input');    
     }
   } catch {
-    console.error('Invalid input');
+    console.error('Operation failed');
   }
   
 }

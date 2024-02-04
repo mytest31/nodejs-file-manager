@@ -6,6 +6,7 @@ import { checkInitialParameters, printWelcomeMessage }
   from './custom_modules/initial/initial.js';
 
 let USERNAME = '';
+export { USERNAME };
 
 async function startConsoleInput() {
   let startDirPath = os.homedir();
@@ -18,7 +19,6 @@ async function startConsoleInput() {
     process.stdout,
     (err) => {
       if (err) {
-        console.log(err);
         console.error(`The program failed.`);
       }
     }

@@ -7,6 +7,12 @@ import { pipeline } from 'stream';
 import { getPathToFile } from '../basic-fs/basic-fx.js';
 
 async function compress(thisObj, currentDir, args) {
+  if (args.length !== 2
+    || args[0].trim() === ""
+    || args[1].trim() === "") {
+    throw new Error("Wrong number of arguments");
+  }
+
   try {
     const sourcePath = await getPathToFile(currentDir, args[0]);
 
@@ -37,7 +43,7 @@ async function compress(thisObj, currentDir, args) {
         output,
         (err) => {
           if (err) {
-            thisObj.push('Invalid input');
+            thisObj.push('Operation failed');
             fsPromises.rm(destinationPath);
           } 
           thisObj.push(os.EOL + os.EOL);
@@ -46,7 +52,7 @@ async function compress(thisObj, currentDir, args) {
         }
     );
   } catch {
-    console.error('Invalid input');
+    console.error('Operation failed');
     thisObj.push(os.EOL + os.EOL);
     thisObj.push(`You are currently in ${currentDir}`);
     thisObj.push(os.EOL);
@@ -54,6 +60,12 @@ async function compress(thisObj, currentDir, args) {
 }
 
 async function decompress(thisObj, currentDir, args) {
+  if (args.length !== 2
+    || args[0].trim() === ""
+    || args[1].trim() === "") {
+    throw new Error("Wrong number of arguments");
+  }
+
   try {
     const sourcePath = await getPathToFile(currentDir, args[0]);
 
@@ -90,7 +102,7 @@ async function decompress(thisObj, currentDir, args) {
         output,
         (err) => {
             if (err) {
-              thisObj.push('Invalid input');
+              thisObj.push('Operation failed');
               fsPromises.rm(destinationPath);
             } 
             thisObj.push(os.EOL + os.EOL);
@@ -99,7 +111,7 @@ async function decompress(thisObj, currentDir, args) {
         }
     );
   } catch {
-    console.error('Invalid input');
+    console.error('Operation failed');
     thisObj.push(os.EOL + os.EOL);
     thisObj.push(`You are currently in ${currentDir}`);
     thisObj.push(os.EOL);

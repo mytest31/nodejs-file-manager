@@ -6,8 +6,14 @@ function up(currentPath) {
   return path.dirname(currentPath);
 }
 
-async function cd(currentPath, pathToDirectory) {
-  try {
+async function cd(currentPath, args) {
+  if (args.length !== 1 || args[0].trim() === "") {
+    throw new Error("Wrong number of arguments");
+  }
+
+  try {  
+    const pathToDirectory = args[0];
+
     let resultPath = '';
     if (pathToDirectory.startsWith('~')) {
       resultPath = path.resolve(os.homedir(), pathToDirectory.slice(2));
@@ -16,14 +22,15 @@ async function cd(currentPath, pathToDirectory) {
     } else {
       resultPath = path.resolve(currentPath, pathToDirectory);
     }
+
     const fileStats = await fsPromises.stat(resultPath);
     await fsPromises.access(resultPath);
     if (fileStats.isDirectory()) {
       return await fsPromises.realpath(resultPath);
     }
     throw new Error('The path is invalid');
-  } catch {
-    console.error('Invalid input');
+  } catch(err) {
+    console.error('Operation failed');
   }
 }
 
@@ -48,7 +55,7 @@ async function ls(currentPath) {
     printInfo.sort((a, b) => a.type.localeCompare(b.type) || a.name - b.name);
     console.table(printInfo);
   } catch {
-    console.error('Invalid input');
+    console.error('Operation failed');
   }
 }
 

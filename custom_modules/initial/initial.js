@@ -2,7 +2,9 @@ import os from 'os';
 
 async function checkInitialParameters() {
   const argv = process.argv.at(-1);
-  if (!argv.includes('=') || argv.split('=').length !== 2) {
+  if (!argv.includes('=')
+    || argv.split('=').length !== 2
+    || argv.split('=')[0] !== '--username') {
     console.log('Invalid input.'
       + ' Please, to start the application, enter the following command'
       + ' "npm run start -- --username=your_username"');
