@@ -1,6 +1,9 @@
 import os from 'os';
 import { Transform, pipeline } from 'stream';
 import {up, cd, ls} from './custom_modules/nwd/nwd.js'
+import { cat, add, rn, cp, mv, rm }
+  from './custom_modules/basic-fs/basic-fx.js';
+
 
 let USERNAME = '';
 let CURRENT_DIR = os.homedir();
@@ -22,6 +25,12 @@ async function printWelcomeMessage() {
   process.stdout.write(os.EOL + os.EOL);
 }
 
+function printIntroductionPrompt(thisObj, currentDir) {
+  thisObj.push(os.EOL + os.EOL);
+  thisObj.push(`You are currently in ${currentDir}`);
+  thisObj.push(os.EOL);
+}
+
 const transformInput = new Transform({
   async transform(chunk, enc, cb) {
     try {
@@ -30,30 +39,44 @@ const transformInput = new Transform({
         console.log(`Thank you for using File Manager, ${USERNAME}, goodbye!`);
         process.exit();
       }
-      const [command, ...args] =
-        inputData
-          .split(" ")
-          .map((value, idx) => idx === 0 ? value.trim() : value);
+      const [command, ...args] = inputData.split(" ");
 
       switch (command) {
         case 'up':
           CURRENT_DIR = up(CURRENT_DIR);
+          printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'cd':
           CURRENT_DIR = await cd(CURRENT_DIR, args.join(' ')) ?? CURRENT_DIR;
+          printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'ls':
           await ls(CURRENT_DIR);
+          printIntroductionPrompt(this, CURRENT_DIR);
+          break;
+        case 'cat':
+          cat(this, CURRENT_DIR, args.join(' '));
+          break;
+        case 'add':
+          await add(CURRENT_DIR, args.join(' '));
+          break;
+        case 'rn':
+          await rn(CURRENT_DIR, args);
+          break;
+        case 'cp':
+          await cp(CURRENT_DIR, args);
+          break;
+        case 'mv':
+          await mv(CURRENT_DIR, args);
+          break;
+        case 'rm':
+          await rm(CURRENT_DIR, args.join(' '));
           break;
         default:
           console.error('Invalid input');
+          printIntroductionPrompt(this, CURRENT_DIR);
       }
-
-      this.push(os.EOL + os.EOL);
-      this.push(`You are currently in ${CURRENT_DIR}`);
-      this.push(os.EOL);
-    } catch(err) {
-      console.log(err);
+    } catch {
       console.error('The File Management system failed');
     }
     cb();
@@ -69,7 +92,9 @@ async function startConsoleInput() {
     transformInput,
     process.stdout,
     (err) => {
-      console.error(`The programme failed.`)
+      if (err) {
+        console.error(`The program failed.`);
+      }
     }
   )
 
