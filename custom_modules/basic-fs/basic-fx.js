@@ -103,7 +103,6 @@ async function mv(thisObj, currentDir, args) {
 async function rm(currentDir, filePath) {
   try {
     const absoluteFilePath = await getPathToFile(currentDir, filePath);
-    console.log(absoluteFilePath);
     await fsPromises.rm(absoluteFilePath);
   } catch {
     console.error('Invalid input delete');
@@ -137,4 +136,4 @@ async function getDestinationPath(currentDir, sourcePath, pathToFileCopy) {
 }
 
 
-export { cat, add, rn, cp, mv, rm, getPathToFile };
+export { cat, add, rn, cp, mv, rm, getPathToFile, getDestinationPath};
