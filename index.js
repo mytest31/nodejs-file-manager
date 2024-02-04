@@ -31,6 +31,10 @@ function printIntroductionPrompt(thisObj, currentDir) {
   thisObj.push(os.EOL);
 }
 
+function getArguments(args) {
+  return args;
+}
+
 const transformInput = new Transform({
   async transform(chunk, enc, cb) {
     try {
@@ -59,9 +63,11 @@ const transformInput = new Transform({
           break;
         case 'add':
           await add(CURRENT_DIR, args.join(' '));
+          printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'rn':
-          await rn(CURRENT_DIR, args);
+          await rn(CURRENT_DIR, getArguments(args));
+          printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'cp':
           await cp(CURRENT_DIR, args);
