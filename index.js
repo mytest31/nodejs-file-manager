@@ -1,5 +1,6 @@
 import os from 'os';
 import { Transform, pipeline } from 'stream';
+import { getOSInfo } from './custom_modules/basic-os/basic-os.js';
 import {up, cd, ls} from './custom_modules/nwd/nwd.js'
 import { cat, add, rn, cp, mv, rm }
   from './custom_modules/basic-fs/basic-fx.js';
@@ -79,8 +80,12 @@ const transformInput = new Transform({
           await rm(CURRENT_DIR, args.join(' '));
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
+        case 'os':
+          await getOSInfo(this, args);
+          printIntroductionPrompt(this, CURRENT_DIR);
+          break;
         default:
-          console.error('Invalid input main');
+          console.error('Invalid input');
           printIntroductionPrompt(this, CURRENT_DIR);
       }
     } catch {
@@ -100,6 +105,7 @@ async function startConsoleInput() {
     process.stdout,
     (err) => {
       if (err) {
+        console.log(err);
         console.error(`The program failed.`);
       }
     }
