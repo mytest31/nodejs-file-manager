@@ -10,7 +10,7 @@ async function cd(currentPath, pathToDirectory) {
   try {
     let resultPath = '';
     if (pathToDirectory.startsWith('~')) {
-      resultPath = path.resolve(os.homedir(), pathToDirectory.slice(1));
+      resultPath = path.resolve(os.homedir(), pathToDirectory.slice(2));
     } else if (path.isAbsolute(pathToDirectory)) {
       resultPath = path.format(path.parse(pathToDirectory));
     } else {

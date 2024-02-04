@@ -70,7 +70,7 @@ const transformInput = new Transform({
           printIntroductionPrompt(this, CURRENT_DIR);
           break;
         case 'cp':
-          await cp(CURRENT_DIR, args);
+          await cp(this, CURRENT_DIR, args);
           break;
         case 'mv':
           await mv(CURRENT_DIR, args);

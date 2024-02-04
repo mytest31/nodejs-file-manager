@@ -48,7 +48,7 @@ async function rn(currentDir, args) {
     const newFileName = args[1];
     let pathToOldFile = path.resolve(currentDir, pathToFile);
     if (pathToFile.startsWith('~')) {
-      pathToOldFile = path.resolve(os.homedir(), pathToFile.slice(1));
+      pathToOldFile = path.resolve(os.homedir(), pathToFile.slice(2));
     } else if (path.isAbsolute(pathToFile)) {
       pathToOldFile = pathToFile;
     } else {
@@ -67,8 +67,32 @@ async function rn(currentDir, args) {
   }
 }
 
-async function cp() {
-  //
+async function cp(thisObj, currentDir, args) {
+  try {
+    const sourcePath = await getPathToFile(currentDir, args[0]);
+    const destinationPath =  await getDestinationPath(currentDir, sourcePath, args[1]);
+
+    const input = fs.createReadStream(sourcePath);
+    const output = fs.createWriteStream(destinationPath);
+
+    input.on("data", (chunk) => {
+      output.write(chunk);
+    })
+
+    input.on('end', () => {
+      thisObj.push(os.EOL + os.EOL);
+      thisObj.push(`You are currently in ${currentDir}`);
+      thisObj.push(os.EOL);
+    })
+
+    input.on('error', () => {
+      console.error('Invalid input');  
+      input.emit('end');
+    })
+  
+  } catch {
+    console.error('Invalid input');
+  }
 }
 
 async function mv() {
@@ -80,7 +104,30 @@ async function rm() {
 }
 
 
+async function getPathToFile(currentDir, filePath) {
+  let absolutePathToFile = path.resolve(currentDir, filePath);
+  if (filePath.startsWith('~')) {
+    absolutePathToFile = path.resolve(os.homedir(), filePath.slice(2));
+  } else if (path.isAbsolute(filePath)) {
+    absolutePathToFile = filePath;
+  }
+  return absolutePathToFile;
+}
 
+
+async function getDestinationPath(currentDir, sourcePath, pathToFileCopy) {
+  let destinationPath =  await getPathToFile(currentDir, pathToFileCopy);
+  const destinationPathStat = await fsPromises.stat(destinationPath);
+
+  if (destinationPathStat.isDirectory()) {
+    destinationPath = path.join(
+      destinationPath,
+      path.parse(sourcePath).base
+    );
+  }
+
+  return destinationPath;
+}
 
 
 export { cat, add, rn, cp, mv, rm };
