@@ -86,12 +86,12 @@ async function cp(thisObj, currentDir, args) {
     })
 
     input.on('error', () => {
-      console.error('Invalid input cp 1');  
+      console.error('Invalid input');  
       input.emit('end');
     })
   
   } catch {
-    console.error('Invalid input cp 2');
+    console.error('Invalid input');
   }
 }
 
@@ -137,4 +137,4 @@ async function getDestinationPath(currentDir, sourcePath, pathToFileCopy) {
 }
 
 
-export { cat, add, rn, cp, mv, rm };
+export { cat, add, rn, cp, mv, rm, getPathToFile };

@@ -1,7 +1,9 @@
 import os from 'os';
 import { Transform, pipeline } from 'stream';
 import { getOSInfo } from './custom_modules/basic-os/basic-os.js';
-import {up, cd, ls} from './custom_modules/nwd/nwd.js'
+import {up, cd, ls} from './custom_modules/nwd/nwd.js';
+import { getHash } from './custom_modules/hash/hash.js';
+
 import { cat, add, rn, cp, mv, rm }
   from './custom_modules/basic-fs/basic-fx.js';
 
@@ -83,6 +85,9 @@ const transformInput = new Transform({
         case 'os':
           await getOSInfo(this, args);
           printIntroductionPrompt(this, CURRENT_DIR);
+          break;
+        case 'hash':
+          await getHash(this, CURRENT_DIR, args.join(' '));
           break;
         default:
           console.error('Invalid input');
